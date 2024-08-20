@@ -4,6 +4,7 @@ from django.conf import settings
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
+from bson.json_util import dumps
 
 
 def index(request):
@@ -16,7 +17,11 @@ def index(request):
     Returns:
         HttpResponse: JSON response.
     """
-    return JsonResponse({"message": "Hello, world!"})
+    collection = settings.MONGO_DB["reviews"]
+    documents = list(collection.find())
+    json_documents = dumps(documents)
+
+    return JsonResponse(json_documents, safe=False)
 
 
 @csrf_exempt
@@ -34,7 +39,7 @@ def insert_reviews(request):
     data = json.loads(request.body)
     reviews = data.get("reviews")
 
-    collection = settings.MONGO_DB["scraping_reviews"]
+    collection = settings.MONGO_DB["reviews"]
     collection.insert_many(reviews)
 
     return JsonResponse({"message": "Data inserted successfully!"})
