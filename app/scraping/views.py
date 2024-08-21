@@ -37,9 +37,9 @@ def insert_reviews(request):
         HttpResponse: JSON response.
     """
     data = json.loads(request.body)
-    reviews = data.get("reviews")
+    product = data.get("product")
 
-    collection = settings.MONGO_DB["reviews"]
-    collection.insert_many(reviews)
+    collection = settings.MONGO_DB["amazon_products"]
+    collection.insert_one(product)
 
     return JsonResponse({"message": "Data inserted successfully!"})
